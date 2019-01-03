@@ -7,7 +7,7 @@ from PIL.Image import Image
 from utils import get_node_id
 
 def P5(graph: nx.Graph, hyperedge_id, image: Image):
-    check_condition(graph, hyperedge_id)
+    check_conditions(graph, hyperedge_id)
     graph.node[hyperedge_id]['should_break'] = 1
     P6(graph, hyperedge_id, image)
 

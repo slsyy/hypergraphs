@@ -7,7 +7,7 @@ from PIL.Image import Image
 from utils import get_node_id, get_common_nodes, get_f1_nodes, get_f2_nodes, get_i_nodes, common_elements
 
 def P6(graph: nx.Graph, hyperedge_id, image: Image):
-    check_condition(graph, hyperedge_id)
+    check_conditions(graph, hyperedge_id)
 
     #Find bigger neighbours procedure
     #First of all: find common nodes connected with our hyperedge
