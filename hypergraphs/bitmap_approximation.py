@@ -23,17 +23,18 @@ def approximate(graph: Graph, max_x: int, max_y: int) -> Tuple[Dict, Dict, Dict]
     APPROX_G = create_approximation_matrix(max_x, max_y)
     APPROX_B = create_approximation_matrix(max_x, max_y)
     matrices = (APPROX_R, APPROX_G, APPROX_B)
-    for node_id, node_data in graph.nodes(data=True):
-        if is_hyperedge_I(node_data):
-            neighbors_data = get_node_neighbors_data(graph, node_id)
-            x1, x2, y1, y2 = get_coordinates_from_neighbors(neighbors_data)
-            for neighbor_data in neighbors_data:
-                neighbor_number = get_neighbor_number(neighbor_data, x1, x2, y1, y2)
-                neighbor_colors = get_colors(neighbor_data)
-                for px in (x1, x2):
-                    for py in (y1, y2):
-                        for matrix, color in zip(matrices, neighbor_colors):
-                            matrix[px][py] += calculate_color(color, neighbor_number, px, x1, x2, py, y1, y2)
+    hyperedges = [(node_id, node_data, get_node_neighbors_data(graph, node_id))
+                  for node_id, node_data in graph.nodes(data=True) if is_hyperedge_I(node_data)]
+    hyperedges = sorted(hyperedges, key=lambda hyperedge: calculate_area(hyperedge))
+    for node_id, node_data, neighbors_data in hyperedges:
+        x1, x2, y1, y2 = get_coordinates_from_neighbors(neighbors_data)
+        for neighbor_data in neighbors_data:
+            neighbor_number = get_neighbor_number(neighbor_data, x1, x2, y1, y2)
+            neighbor_colors = get_colors(neighbor_data)
+            for px in (x1, x2):
+                for py in (y1, y2):
+                    for matrix, color in zip(matrices, neighbor_colors):
+                        matrix[px][py] += calculate_color(color, neighbor_number, px, x1, x2, py, y1, y2)
     return matrices
 
 
@@ -46,12 +47,17 @@ def create_approximation_matrix(max_x: int, max_y: int) -> Dict[int, Dict[int, f
     return approximation_matrix
 
 
+def get_node_neighbors_data(graph: Graph, node_id: int) -> List[Dict]:
+    return list(graph.node[neighbor_id] for neighbor_id in graph.neighbors(node_id))
+
+
 def is_hyperedge_I(node_data: Dict) -> bool:
     return node_data['is_hyperedge'] and node_data['label'] == 'I'
 
 
-def get_node_neighbors_data(graph: Graph, node_id: int) -> List[Dict]:
-    return list(graph.node[neighbor_id] for neighbor_id in graph.neighbors(node_id))
+def calculate_area(hyperedge_neighbors_data: List[Dict]) -> int:
+    x1, x2, y1, y2 = get_coordinates_from_neighbors(hyperedge_neighbors_data)
+    return (x2 - x1) * (y2 - y1)
 
 
 def get_coordinates_from_neighbors(neighbors_data: List[Dict]) -> Tuple[int, int, int, int]:
