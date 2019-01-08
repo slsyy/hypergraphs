@@ -1,3 +1,4 @@
+matplotlib
 certifi==2018.11.29
 decorator==4.3.0
 networkx==2.2

@@ -1,4 +1,7 @@
+import os
 from typing import Tuple
+
+IMAGE_PATH = os.path.join(os.path.dirname(__file__), "tests/test_data", "four_colors.jpg")
 
 
 def get_node_id(node_position: Tuple[int, int]) -> int:
