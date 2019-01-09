@@ -44,7 +44,7 @@ class TestP5(TestCase):
 
         i_hyperedges_ids = self.__i_hyperedges_ids()
         print(i_hyperedges_ids)
-        plot(self.graph)
+        # plot(self.graph)
         # for i_hyperedge in i_hyperedges_ids:
         #     P3(???)
 

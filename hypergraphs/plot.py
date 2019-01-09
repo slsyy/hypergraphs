@@ -7,6 +7,11 @@ from matplotlib import pyplot as plt
 
 
 def plot(graph: nx.Graph):
+    plot_but_dont_show(graph)
+    plt.show()
+
+
+def plot_but_dont_show(graph: nx.Graph):
     labels = {}
     colors = []
     positions = {}
@@ -15,7 +20,8 @@ def plot(graph: nx.Graph):
         positions[node_id] = node_data['x'], node_data['y']
 
         if 'r' in node_data:
-            colors.append(convert_to_hex((node_data['r'], node_data['g'], node_data['b'], 0)))
+            colors.append(convert_to_hex(
+                (node_data['r'], node_data['g'], node_data['b'], 0)))
         else:
             colors.append(convert_to_hex((255, 255, 255, 0)))
         if node_data['is_hyperedge']:
@@ -35,4 +41,3 @@ def plot(graph: nx.Graph):
         node_color=colors,
     )
     plt.axis('off')
-    plt.show()
