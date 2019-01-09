@@ -4,7 +4,6 @@ from unittest import TestCase
 import networkx as nx
 from PIL import Image
 
-from plot import plot
 from productions import P1, P2
 from productions import P5
 from utils import HyperEdge
@@ -44,7 +43,7 @@ class TestP5(TestCase):
 
         i_hyperedges_ids = self.__i_hyperedges_ids()
         print(i_hyperedges_ids)
-        plot(self.graph)
+        # plot(self.graph)
         # for i_hyperedge in i_hyperedges_ids:
         #     P3(???)
 
@@ -66,6 +65,5 @@ class TestP5(TestCase):
 
         hyperedge = [(x, y) for x, y in self.graph.nodes(data=True)
                      if 'label' in y.keys() and y['label'] == HyperEdge.I.name][0]
-        hyperedge[1]['should_break'] = 0
         self.graph.add_node(hyperedge[0], **hyperedge[1])
         return hyperedge

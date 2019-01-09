@@ -42,7 +42,7 @@ def get_i_nodes(graph, common_node_id):
 def __get_x_nodes(graph, common_node_id, label):
     if graph.node[common_node_id]['is_hyperedge']:
         raise ValueError('Given node_id is not id of common node')
-    return [x_node for x_node in graph[common_node_id] if graph.nodes[x_node]['label'] == label]
+    return [x_node for x_node in graph[common_node_id] if graph.nodes[x_node]['label'] == label.name]
 
 
 def common_elements(list1, list2):
