@@ -46,6 +46,6 @@ def draw(p1, p2, r1, r2, r3, r4, g1, g2, g3, g4, b1, b2, b3, b4):
     for x in range(x2 + 1):
         for y in range(y2 + 1):
             pixels[x, y] = (approx_r[x][y], approx_g[x][y], approx_b[x][y])
-    bitmap.show()
+    # bitmap.show()
 
     return approx_r, approx_g, approx_b

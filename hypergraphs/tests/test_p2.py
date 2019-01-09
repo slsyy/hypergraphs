@@ -56,7 +56,7 @@ class TestP2(TestCase):
             self.assertTrue(hyperedge_position in expected_positions)
             self.assertEqual(len(self.graph[hyperedge_id]), 2)
             expected_node_position = self.count_position_of_second_point(hyperedge_position, self.added_node_position)
-            print(expected_node_position)
+            # print(expected_node_position)
             # self.assertTrue(get_node_id(expected_node_position) in self.graph[hyperedge_id])
             self.assertTrue(expected_node_position is not self.added_node_position)
 
