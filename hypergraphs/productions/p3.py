@@ -9,6 +9,9 @@ from utils import get_node_id
 # hyp_b - B labeled hyperedge id
 # hyp_is - I labeled hyperedge_ids
 # hyp_f - F labeled hyperedge_id
+from .p2 import Direction
+
+
 def P3(graph: nx.Graph, hyp_b, hyp_is, hyp_f, image: Image):
     __assert_hyper_edge(graph, [hyp_b], 'B')
     __assert_hyper_edge(graph, hyp_is, 'I')
@@ -17,7 +20,7 @@ def P3(graph: nx.Graph, hyp_b, hyp_is, hyp_f, image: Image):
     hyp_f_data = graph.node[hyp_f]
     hyp_b_data = graph.node[hyp_b]
 
-    hyp_f_neighbour_ids = graph.neighbors(hyp_f)
+    hyp_f_neighbour_ids = list(graph.neighbors(hyp_f))
 
     if len(hyp_f_neighbour_ids) != 1:
         raise ValueError('F should have 1 neighbour')
@@ -28,22 +31,22 @@ def P3(graph: nx.Graph, hyp_b, hyp_is, hyp_f, image: Image):
 
     hyp_f_neighbour_data = graph.node[hyp_f_neighbour_ids[0]]
 
-    if hyp_f_data['label'] == 'Direction.N':
+    if hyp_f_data['label'] == Direction.N:
         if hyp_f_data['x'] != hyp_f_neighbour_data['x'] or hyp_f_data['y'] <= hyp_f_neighbour_data['y']:
             raise ValueError('F hyperedge has weird position')
         if hyp_f_data['x'] != hyp_b_data['x'] or hyp_f_data['y'] >= hyp_b_data['y']:
             raise ValueError('F hyperedge has weird position (B)')
-    elif hyp_f_data['label'] == 'Direction.S':
+    elif hyp_f_data['label'] == Direction.S:
         if hyp_f_data['x'] != hyp_f_neighbour_data['x'] or hyp_f_data['y'] >= hyp_f_neighbour_data['y']:
             raise ValueError('F hyperedge has weird position')
         if hyp_f_data['x'] != hyp_b_data['x'] or hyp_f_data['y'] <= hyp_b_data['y']:
             raise ValueError('F hyperedge has weird position (B)')
-    elif hyp_f_data['label'] == 'Direction.E':
+    elif hyp_f_data['label'] == Direction.E:
         if hyp_f_data['x'] <= hyp_f_neighbour_data['x'] or hyp_f_data['y'] != hyp_f_neighbour_data['y']:
             raise ValueError('F hyperedge has weird position')
         if hyp_f_data['x'] >= hyp_b_data['x'] or hyp_f_data['y'] != hyp_b_data['y']:
             raise ValueError('F hyperedge has weird position (B)')
-    elif hyp_f_data['label'] == 'Direction.W':
+    elif hyp_f_data['label'] == Direction.W:
         if hyp_f_data['x'] >= hyp_f_neighbour_data['x'] or hyp_f_data['y'] != hyp_f_neighbour_data['y']:
             raise ValueError('F hyperedge has weird position')
         if hyp_f_data['x'] <= hyp_b_data['x'] or hyp_f_data['y'] != hyp_b_data['y']:
