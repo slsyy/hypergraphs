@@ -1,38 +1,76 @@
 import uuid
-from enum import Enum
 
 import networkx as nx
 from PIL.Image import Image
 
 from utils import get_node_id
 
+
 # hyp_b - B labeled hyperedge id
 # hyp_is - I labeled hyperedge_ids
-# hyp_f1 - F1 labeled hyperedge_id
-def P3(graph: nx.Graph, hyp_b, hyp_is, hyp_f1, image: Image):
-    __assert_hyper_edge(graph, hyp_b, 'B')
-    for hyp_i in hyp_is:
-        __assert_hyper_edge(graph, hyp_i, 'I')
-    __assert_hyper_edge(graph, hyp_f1, 'Direction.N')
+# hyp_f - F labeled hyperedge_id
+def P3(graph: nx.Graph, hyp_b, hyp_is, hyp_f, image: Image):
+    __assert_hyper_edge(graph, [hyp_b], 'B')
+    __assert_hyper_edge(graph, hyp_is, 'I')
+    __assert_hyper_edge(graph, [hyp_f])
 
-    hyperedge_data = graph.node[hyp_b]
-    new_node_position = (hyperedge_data['x'], hyperedge_data['y'])
+    hyp_f_data = graph.node[hyp_f]
+    hyp_b_data = graph.node[hyp_b]
+
+    hyp_f_neighbour_ids = graph.neighbors(hyp_f)
+
+    if len(hyp_f_neighbour_ids) != 1:
+        raise ValueError('F should have 1 neighbour')
+
+    for hyp_i in hyp_is:
+        if hyp_f_neighbour_ids[0] not in graph.neighbors(hyp_i):
+            raise ValueError('I is not connected with F1 via neighbour')
+
+    hyp_f_neighbour_data = graph.node[hyp_f_neighbour_ids[0]]
+
+    if hyp_f_data['label'] == 'Direction.N':
+        if hyp_f_data['x'] != hyp_f_neighbour_data['x'] or hyp_f_data['y'] <= hyp_f_neighbour_data['y']:
+            raise ValueError('F hyperedge has weird position')
+        if hyp_f_data['x'] != hyp_b_data['x'] or hyp_f_data['y'] >= hyp_b_data['y']:
+            raise ValueError('F hyperedge has weird position (B)')
+    elif hyp_f_data['label'] == 'Direction.S':
+        if hyp_f_data['x'] != hyp_f_neighbour_data['x'] or hyp_f_data['y'] >= hyp_f_neighbour_data['y']:
+            raise ValueError('F hyperedge has weird position')
+        if hyp_f_data['x'] != hyp_b_data['x'] or hyp_f_data['y'] <= hyp_b_data['y']:
+            raise ValueError('F hyperedge has weird position (B)')
+    elif hyp_f_data['label'] == 'Direction.E':
+        if hyp_f_data['x'] <= hyp_f_neighbour_data['x'] or hyp_f_data['y'] != hyp_f_neighbour_data['y']:
+            raise ValueError('F hyperedge has weird position')
+        if hyp_f_data['x'] >= hyp_b_data['x'] or hyp_f_data['y'] != hyp_b_data['y']:
+            raise ValueError('F hyperedge has weird position (B)')
+    elif hyp_f_data['label'] == 'Direction.W':
+        if hyp_f_data['x'] >= hyp_f_neighbour_data['x'] or hyp_f_data['y'] != hyp_f_neighbour_data['y']:
+            raise ValueError('F hyperedge has weird position')
+        if hyp_f_data['x'] <= hyp_b_data['x'] or hyp_f_data['y'] != hyp_b_data['y']:
+            raise ValueError('F hyperedge has weird position (B)')
+    else:
+        raise ValueError('F hyperedge has weird label')
+
+
+    new_node_position = (hyp_b_data['x'], hyp_b_data['y'])
     new_node_id = get_node_id(new_node_position)
 
     __add_new_node(graph, image, new_node_id, new_node_position) # add v
     __add_hyperedges_between_neighbour_nodes(graph, hyp_b, new_node_id, new_node_position) # add 1-b-v-b-2
     for hyp_i in hyp_is:
         __add_edges_between_nodes(graph, new_node_id, hyp_i) # add v-i and v-i
-    __add_edges_between_nodes(graph, new_node_id, hyp_f1) # add v-f1
+    __add_edges_between_nodes(graph, new_node_id, hyp_f) # add v-f1
     graph.remove_node(hyp_b)
 
 
-def __assert_hyper_edge(graph, hyperedge_ids, label):
+def __assert_hyper_edge(graph, hyperedge_ids, label=None):
     for hyperedge_id in hyperedge_ids:
         if not graph.node[hyperedge_id]['is_hyperedge']:
             raise ValueError('Given node_id is not id of hyperedge')
-        if not graph.node[hyperedge_id]['label'] is label:
-            raise ValueError(f"Given node_id is not hyperedge type '{label}'")
+
+        if label:
+            if not graph.node[hyperedge_id]['label'] is label:
+                raise ValueError(f"Given node_id is not hyperedge type '{label}'")
 
 
 def __add_new_node(graph, image, new_node_id, new_node_position):
