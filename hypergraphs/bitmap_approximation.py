@@ -1,6 +1,7 @@
 from typing import Tuple, Dict, List
 
 from networkx import Graph
+from utils import get_node_id
 
 NEIGHBOR_COLORING_COEFFICIENTS_CALCULATORS = {
     # neighbor_number : function to calculate color coefficient
@@ -26,13 +27,14 @@ def approximate(graph: Graph, max_x: int, max_y: int) -> Tuple[Dict, Dict, Dict]
     hyperedges = [(node_id, node_data, get_node_neighbors_data(graph, node_id))
                   for node_id, node_data in graph.nodes(data=True) if is_hyperedge_I(node_data)]
     hyperedges = sorted(hyperedges, key=lambda hyperedge: calculate_area(hyperedge))
-    for node_id, node_data, neighbors_data in hyperedges:
+    for node_id, _, neighbors_data in hyperedges:
         x1, x2, y1, y2 = get_coordinates_from_neighbors(neighbors_data)
-        for neighbor_data in neighbors_data:
-            neighbor_number = get_neighbor_number(neighbor_data, x1, x2, y1, y2)
-            neighbor_colors = get_colors(neighbor_data)
-            for px in (x1, x2):
-                for py in (y1, y2):
+        corners_data = [graph[get_node_id((x, y))] for x in (x1, x2) for y in (y1, y2)]
+        for px in range(x1, x2 + 1):
+            for py in range(y1, y2 + 1):
+                for neighbor_data in corners_data:
+                    neighbor_number = get_neighbor_number(neighbor_data, x1, x2, y1, y2)
+                    neighbor_colors = get_colors(neighbor_data)
                     for matrix, color in zip(matrices, neighbor_colors):
                         matrix[px][py] += calculate_color(color, neighbor_number, px, x1, x2, py, y1, y2)
     return matrices
