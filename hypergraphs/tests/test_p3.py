@@ -66,7 +66,69 @@ class TestP3(TestCase):
     def test_if_exception_when_wrong_b_hyperedge(self):
         dir_N = self.hyperedges[Direction.N]
         dir_S = self.hyperedges[Direction.S]
+        dir_E = self.hyperedges[Direction.E]
         def raisingMethod():
             P3(self.graph, dir_S['b'][0], [x for x, y in dir_N['is']], dir_N['f'][0], self.image)
 
         self.assertRaises(ValueError, raisingMethod)
+
+        def raisingMethod2():
+            P3(self.graph, dir_E['b'][0], [x for x, y in dir_N['is']], dir_N['f'][0], self.image)
+
+        self.assertRaises(ValueError, raisingMethod2)
+
+    def test_if_exception_when_wrong_f_hyperedge(self):
+        dir_N = self.hyperedges[Direction.N]
+        dir_S = self.hyperedges[Direction.S]
+
+        def raisingMethod():
+            P3(self.graph, dir_N['b'][0], [x for x, y in dir_N['is']], dir_S['f'][0], self.image)
+
+        self.assertRaises(ValueError, raisingMethod)
+
+    def test_b_hyperedge_removed(self):
+        edges = self.hyperedges[Direction.N]
+        self.run_P3(edges)
+        self.assertTrue(edges['b'][0] not in self.graph.node)
+
+    def test_v_created(self):
+        edges = self.hyperedges[Direction.N]
+        self.run_P3(edges)
+        bx, by = edges['b'][1]['x'], edges['b'][1]['y']
+        new_node_id = get_node_id((bx, by))
+
+        self.assertTrue(new_node_id in self.graph.node)
+
+    def test_v_connected_with_b_hyperedges(self):
+        edges = self.hyperedges[Direction.N]
+        self.run_P3(edges)
+        bx, by = edges['b'][1]['x'], edges['b'][1]['y']
+        new_node_id = get_node_id((bx, by))
+
+        neighbours = list(self.graph.neighbors(new_node_id))
+        bs = [(x, y) for x, y in self.graph.nodes(data=True) if x in neighbours and 'label' in y.keys() and y['label'] == 'B']
+        self.assertTrue(len(bs) == 2)
+
+    def test_v_connected_with_i_hyperedges(self):
+        edges = self.hyperedges[Direction.N]
+        self.run_P3(edges)
+        bx, by = edges['b'][1]['x'], edges['b'][1]['y']
+        new_node_id = get_node_id((bx, by))
+
+        neighbours = list(self.graph.neighbors(new_node_id))
+        self.assertTrue(edges['is'][0][0] in neighbours)
+        self.assertTrue(edges['is'][1][0] in neighbours)
+
+    def test_v_connected_with_f_hyperedge(self):
+        edges = self.hyperedges[Direction.N]
+        self.run_P3(edges)
+        bx, by = edges['b'][1]['x'], edges['b'][1]['y']
+        new_node_id = get_node_id((bx, by))
+
+        neighbours = list(self.graph.neighbors(new_node_id))
+        self.assertTrue(edges['f'][0] in neighbours)
+
+    ### HELPERS
+
+    def run_P3(self, edges):
+        P3(self.graph, edges['b'][0], [x for x, y in edges['is']], edges['f'][0], self.image)

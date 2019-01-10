@@ -26,7 +26,7 @@ def P3(graph: nx.Graph, hyp_b, hyp_is, hyp_f, image: Image):
         raise ValueError('F should have 1 neighbour')
 
     for hyp_i in hyp_is:
-        if hyp_f_neighbour_ids[0] not in graph.neighbors(hyp_i):
+        if hyp_f_neighbour_ids[0] not in list(graph.neighbors(hyp_i)):
             raise ValueError('I is not connected with F1 via neighbour')
 
     hyp_f_neighbour_data = graph.node[hyp_f_neighbour_ids[0]]
