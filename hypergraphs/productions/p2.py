@@ -76,7 +76,7 @@ def __add_direction_hyperedges(graph, neighbour_id):
         hyperedge_id = uuid.uuid4()
         graph.add_node(
             hyperedge_id,
-            label=direction,
+            label=direction.name,
             is_hyperedge=True,
             x=direction_calulcators[direction][0](graph.node[neighbour_id]['x']),
             y=direction_calulcators[direction][1](graph.node[neighbour_id]['y'])

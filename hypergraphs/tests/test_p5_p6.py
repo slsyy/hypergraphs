@@ -28,7 +28,7 @@ class TestP5(TestCase):
 
     def test_p5_should_brake_only_i_hyperedge(self):
         self.__prepare_multi_hyperedge()
-        b_hyperedges_ids = self.__hyperedges_ids(HyperEdge.B.name)
+        b_hyperedges_ids = self.__hyperedges_ids(HyperEdge.B)
         f1_hyperedges_ids = self.__hyperedges_ids(Direction.N) + self.__hyperedges_ids(Direction.S)
         f2_hyperedges_ids = self.__hyperedges_ids(Direction.E) + self.__hyperedges_ids(Direction.W)
 
@@ -46,12 +46,11 @@ class TestP5(TestCase):
         width, height = self.image.size
 
         P1(self.graph, x_max_idx=width - 1, y_max_idx=height - 1, image=self.image)
-        i_hyperedges_ids = self.__hyperedges_ids(HyperEdge.I.name)
+        i_hyperedges_ids = self.__hyperedges_ids(HyperEdge.I)
         P5(self.graph, i_hyperedges_ids[0], self.image)
         P2(self.graph, i_hyperedges_ids[0], self.image)
 
-        i_hyperedges_ids = self.__hyperedges_ids(HyperEdge.I.name)
-        P5(self.graph, i_hyperedges_ids[0], self.image)
+        i_hyperedges_ids = self.__hyperedges_ids(HyperEdge.I)
         print(i_hyperedges_ids)
         # plot(self.graph)
         # for i_hyperedge in i_hyperedges_ids:
@@ -62,7 +61,7 @@ class TestP5(TestCase):
 
     def __hyperedges(self, label):
         return [(idd, data) for idd, data in self.graph.nodes(data=True)
-                if 'label' in data.keys() and data['label'] == label]
+                if 'label' in data.keys() and data['label'] == label.name]
 
     def __prepare_i_hyperedge(self):
         width, height = self.image.size
@@ -81,6 +80,6 @@ class TestP5(TestCase):
     def __prepare_multi_hyperedge(self):
         width, height = self.image.size
         P1(self.graph, x_max_idx=width - 1, y_max_idx=height - 1, image=self.image)
-        i_hyperedges_ids = self.__hyperedges_ids(HyperEdge.I.name)
+        i_hyperedges_ids = self.__hyperedges_ids(HyperEdge.I)
         P5(self.graph, i_hyperedges_ids[0], self.image)
         P2(self.graph, i_hyperedges_ids[0], self.image)

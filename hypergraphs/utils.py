@@ -3,8 +3,6 @@ from typing import Tuple
 
 
 class HyperEdge(Enum):
-    F1 = 'F1'
-    F2 = 'F2'
     I = 'I'
     B = 'B'
 
@@ -35,30 +33,23 @@ def get_common_nodes(graph, hyperedge_id):
 
 
 def get_f1_nodes(graph, common_node_id):
-    allnodes =  [ data for idd, data in graph.nodes(data=True)]
-    tmpnodes = __get_x_nodes(graph, common_node_id, Direction.S)
-    tmp2nodes = __get_x_nodes(graph, common_node_id, Direction.N)
-    nodes = __get_x_nodes(graph, common_node_id, HyperEdge.F1)
-    return __get_x_nodes(graph, common_node_id, HyperEdge.F1)
+    return __get_x_nodes(graph, common_node_id, Direction.N) + \
+           __get_x_nodes(graph, common_node_id, Direction.S)
 
 
 def get_f2_nodes(graph, common_node_id):
-    allnodes = [ data for idd, data in graph.nodes(data=True)]
-    tmpnodes = __get_x_nodes(graph, common_node_id, Direction.W)
-    tmp2nodes = __get_x_nodes(graph, common_node_id, Direction.E)
-    nodes = __get_x_nodes(graph, common_node_id, HyperEdge.F2)
-    return __get_x_nodes(graph, common_node_id, HyperEdge.F2)
+    return __get_x_nodes(graph, common_node_id, Direction.W) + \
+           __get_x_nodes(graph, common_node_id, Direction.E)
 
 
 def get_i_nodes(graph, common_node_id):
-    nodes = __get_x_nodes(graph, common_node_id, HyperEdge.I.name)
-    return __get_x_nodes(graph, common_node_id, HyperEdge.I.name)
+    return __get_x_nodes(graph, common_node_id, HyperEdge.I)
 
 
 def __get_x_nodes(graph, common_node_id, label):
     if graph.node[common_node_id]['is_hyperedge']:
         raise ValueError('Given node_id is not id of common node')
-    return [x_node for x_node in graph[common_node_id] if graph.nodes[x_node]['label'] == label]
+    return [x_node for x_node in graph[common_node_id] if graph.nodes[x_node]['label'] == label.name]
 
 
 def common_elements(list1, list2):
