@@ -1,10 +1,10 @@
-from typing import Tuple, Dict, List
+from typing import Dict, List, Tuple
 
 from networkx import Graph
-from utils import get_node_id
+from utils import get_node_data
 
-NEIGHBOR_COLORING_COEFFICIENTS_CALCULATORS = {
-    # neighbor_number : function to calculate color coefficient
+COLORING_COEFFICIENT_CALCULATORS = {
+    # corner number : function to calculate color coefficient
     1: lambda px, x1, x2, py, y1, y2: (1 - (px - x1) / (x2 - x1)) * ((py - y1) / (y2 - y1)),
     2: lambda px, x1, x2, py, y1, y2: ((px - x1) / (x2 - x1)) * ((py - y1) / (y2 - y1)),
     3: lambda px, x1, x2, py, y1, y2: (1 - (px - x1) / (x2 - x1)) * (1 - (py - y1) / (y2 - y1)),
@@ -20,37 +20,42 @@ def approximate(graph: Graph, max_x: int, max_y: int) -> Tuple[Dict, Dict, Dict]
     :param max_y: image y axis size (height)
     :return: returns matrices that approximate bitmap colors
     """
-    APPROX_R = create_approximation_matrix(max_x, max_y)
-    APPROX_G = create_approximation_matrix(max_x, max_y)
-    APPROX_B = create_approximation_matrix(max_x, max_y)
-    matrices = (APPROX_R, APPROX_G, APPROX_B)
-    hyperedges = [(node_id, node_data, get_node_neighbors_data(graph, node_id))
-                  for node_id, node_data in graph.nodes(data=True) if is_hyperedge_I(node_data)]
-    hyperedges = sorted(hyperedges, key=lambda hyperedge: calculate_area(hyperedge))
-    for node_id, _, neighbors_data in hyperedges:
-        x1, x2, y1, y2 = get_coordinates_from_neighbors(neighbors_data)
-        corners_data = [graph[get_node_id((x, y))] for x in (x1, x2) for y in (y1, y2)]
+    matrices = create_matrices(max_x, max_y)
+    was_pixel_approximated = {x: {y: False for y in range(max_y)} for x in range(max_x)}
+    hyperedges_neighbors = find_hyperedges_neighbors(graph)
+    for hyperedge_neighbors in sorted(hyperedges_neighbors, key=lambda neighbors: calculate_area(neighbors),
+                                      reverse=True):
+        x1, x2, y1, y2 = get_coordinates_from_neighbors(hyperedge_neighbors)
+        corners_with_ids = enumerate_hyperedge_corners(graph, x1, x2, y1, y2, matrices)
         for px in range(x1, x2 + 1):
             for py in range(y1, y2 + 1):
-                for neighbor_data in corners_data:
-                    neighbor_number = get_neighbor_number(neighbor_data, x1, x2, y1, y2)
-                    neighbor_colors = get_colors(neighbor_data)
-                    for matrix, color in zip(matrices, neighbor_colors):
-                        matrix[px][py] += calculate_color(color, neighbor_number, px, x1, x2, py, y1, y2)
+                if not was_pixel_approximated[px][py]:
+                    for corner_id, corner_data in corners_with_ids:
+                        for matrix, color in zip(matrices, get_colors(corner_data)):
+                            matrix[px][py] += calculate_color(color, corner_id, px, x1, x2, py, y1, y2)
+                            matrix[px][py] = min(matrix[px][py], 255)
+                    was_pixel_approximated[px][py] = True
     return matrices
 
 
+def create_matrices(max_x: int, max_y: int) -> Tuple[Dict, Dict, Dict]:
+    approx_r = create_approximation_matrix(max_x, max_y)
+    approx_g = create_approximation_matrix(max_x, max_y)
+    approx_b = create_approximation_matrix(max_x, max_y)
+    return approx_r, approx_g, approx_b
+
+
 def create_approximation_matrix(max_x: int, max_y: int) -> Dict[int, Dict[int, float]]:
-    approximation_matrix = {}
-    for x in range(max_x):
-        approximation_matrix[x] = {}
-        for y in range(max_y):
-            approximation_matrix[x][y] = 0.0
-    return approximation_matrix
+    return {x: {y: 0.0 for y in range(max_y)} for x in range(max_x)}
+
+
+def find_hyperedges_neighbors(graph: Graph) -> List[List[Dict]]:
+    return [get_node_neighbors_data(graph, node_id) for node_id, node_data in graph.nodes(data=True)
+            if is_hyperedge_I(node_data)]
 
 
 def get_node_neighbors_data(graph: Graph, node_id: int) -> List[Dict]:
-    return list(graph.node[neighbor_id] for neighbor_id in graph.neighbors(node_id))
+    return [graph.node[neighbor_id] for neighbor_id in graph.neighbors(node_id)]
 
 
 def is_hyperedge_I(node_data: Dict) -> bool:
@@ -70,8 +75,14 @@ def get_coordinates_from_neighbors(neighbors_data: List[Dict]) -> Tuple[int, int
     return min(xs), max(xs), min(ys), max(ys)
 
 
-def get_neighbor_number(neighbor_data: Dict, x1: int, x2: int, y1: int, y2: int) -> int:
-    x, y = neighbor_data['x'], neighbor_data['y']
+def enumerate_hyperedge_corners(graph: Graph, x1: int, x2: int, y1: int, y2: int, matrices: Tuple[Dict, Dict, Dict]) \
+        -> List[Tuple[int, Dict]]:
+    return [(get_corner_number(corner_data, x1, x2, y1, y2), corner_data)
+            for corner_data in get_corners_data(graph, x1, x2, y1, y2, matrices)]
+
+
+def get_corner_number(corner_data: Dict, x1: int, x2: int, y1: int, y2: int) -> int:
+    x, y = corner_data['x'], corner_data['y']
     if x == x1:
         if y == y2:
             return 1
@@ -85,9 +96,21 @@ def get_neighbor_number(neighbor_data: Dict, x1: int, x2: int, y1: int, y2: int)
     raise ValueError('Cannot identify neighbor number!')
 
 
+def get_corners_data(graph: Graph, x1: int, x2: int, y1: int, y2: int, matrices: Tuple[Dict, Dict, Dict]) -> List[Dict]:
+    corners_data = []
+    for x in (x1, x2):
+        for y in (y1, y2):
+            try:
+                corners_data.append(get_node_data(graph, (x, y)))
+            except KeyError:
+                corners_data.append(
+                    {'x': x, 'y': y, 'r': matrices[0][x][y], 'g': matrices[1][x][y], 'b': matrices[2][x][y]})
+    return corners_data
+
+
 def get_colors(node_data: Dict) -> Tuple[float, float, float]:
     return node_data['r'], node_data['g'], node_data['b']
 
 
-def calculate_color(color: float, neighbor_number: int, px: int, x1: int, x2: int, py: int, y1: int, y2: int) -> float:
-    return color * NEIGHBOR_COLORING_COEFFICIENTS_CALCULATORS[neighbor_number](px, x1, x2, py, y1, y2)
+def calculate_color(color: float, corner_number: int, px: int, x1: int, x2: int, py: int, y1: int, y2: int) -> float:
+    return color * COLORING_COEFFICIENT_CALCULATORS[corner_number](px, x1, x2, py, y1, y2)

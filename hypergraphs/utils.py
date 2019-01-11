@@ -1,6 +1,8 @@
 import os
 from enum import Enum
-from typing import Tuple
+from typing import Dict, Tuple
+
+from networkx import Graph
 
 IMAGE_PATH = os.path.join(os.path.dirname(__file__), "tests/test_data", "four_colors.jpg")
 
@@ -23,6 +25,15 @@ def get_node_id(node_position: Tuple[int, int]) -> int:
     :return: node id, a hash of node position
     """
     return hash(node_position)
+
+
+def get_node_data(graph: Graph, node_position: Tuple[int, int]) -> Dict:
+    """
+    :param graph:
+    :param node_position: a tuple containing x and y coordinates of a node
+    :return: node data
+    """
+    return graph.node[get_node_id(node_position)]
 
 
 def convert_to_hex(rgba: Tuple[int, int, int, int]) -> str:
