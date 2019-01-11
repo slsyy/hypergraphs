@@ -1,5 +1,6 @@
 from typing import Dict, List, Tuple
 
+from PIL import Image
 from networkx import Graph
 
 from hypergraphs.utils import get_node_data
@@ -115,3 +116,14 @@ def get_colors(node_data: Dict) -> Tuple[float, float, float]:
 
 def calculate_color(color: float, corner_number: int, px: int, x1: int, x2: int, py: int, y1: int, y2: int) -> float:
     return color * COLORING_COEFFICIENT_CALCULATORS[corner_number](px, x1, x2, py, y1, y2)
+
+
+def draw_approximation(image: Image, approx_r: Dict, approx_g: Dict, approx_b: Dict):
+    # if the image is not showing refer to this stackoverflow thread:
+    # https://stackoverflow.com/questions/16279441/image-show-wont-display-the-picture
+    bitmap = Image.new('RGB', image.size)
+    pixels = bitmap.load()
+    for x in range(image.width):
+        for y in range(image.height):
+            pixels[x, y] = (round(approx_r[x][y]), round(approx_g[x][y]), round(approx_b[x][y]))
+    bitmap.show()
