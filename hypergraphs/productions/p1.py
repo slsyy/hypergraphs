@@ -3,7 +3,7 @@ import uuid
 import networkx as nx
 from PIL.Image import Image
 
-from utils import get_node_id
+from hypergraphs.utils import get_node_id
 
 
 def P1(graph: nx.Graph, x_max_idx: int, y_max_idx: int, image: Image):

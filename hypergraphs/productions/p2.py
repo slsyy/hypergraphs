@@ -3,7 +3,7 @@ import uuid
 import networkx as nx
 from PIL.Image import Image
 
-from utils import get_node_id, Direction
+from hypergraphs.utils import get_node_id, Direction
 
 direction_calulcators = {
     Direction.N: (lambda x: x, lambda x: x + 100),

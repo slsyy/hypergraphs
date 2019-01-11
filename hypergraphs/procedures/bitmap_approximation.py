@@ -1,7 +1,8 @@
 from typing import Dict, List, Tuple
 
 from networkx import Graph
-from utils import get_node_data
+
+from hypergraphs.utils import get_node_data
 
 COLORING_COEFFICIENT_CALCULATORS = {
     # corner number : function to calculate color coefficient

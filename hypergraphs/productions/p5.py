@@ -1,8 +1,8 @@
 import networkx as nx
 from PIL.Image import Image
 
-from productions.p6 import P6
-from utils import HyperEdge
+from hypergraphs.productions.p6 import P6
+from hypergraphs.utils import HyperEdge
 
 
 def P5(graph: nx.Graph, hyperedge_id, image: Image):

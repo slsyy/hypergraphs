@@ -1,7 +1,7 @@
 import networkx as nx
 from PIL.Image import Image
 
-from utils import get_common_nodes, get_f1_nodes, get_f2_nodes, get_i_nodes, common_elements, HyperEdge
+from hypergraphs.utils import get_common_nodes, get_f1_nodes, get_f2_nodes, get_i_nodes, common_elements, HyperEdge
 
 
 def P6(graph: nx.Graph, hyperedge_id, image: Image):
