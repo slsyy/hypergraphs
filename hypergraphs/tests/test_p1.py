@@ -1,11 +1,10 @@
-import os
 from unittest import TestCase
+
 import networkx as nx
 from PIL import Image
 
 from productions import P1
-
-IMAGE_PATH = os.path.join(os.path.dirname(__file__), "test_data", "four_colors.jpg")
+from utils import IMAGE_PATH
 
 
 class TestP1(TestCase):

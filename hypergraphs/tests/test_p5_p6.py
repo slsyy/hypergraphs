@@ -1,4 +1,3 @@
-import os
 from unittest import TestCase
 
 import networkx as nx
@@ -6,9 +5,7 @@ from PIL import Image
 
 from productions import P1, P2
 from productions import P5
-from utils import HyperEdge
-
-IMAGE_PATH = os.path.join(os.path.dirname(__file__), "test_data", "four_colors.jpg")
+from utils import HyperEdge, IMAGE_PATH, Direction
 
 
 class TestP5(TestCase):
@@ -27,32 +24,41 @@ class TestP5(TestCase):
         self.assertRaises(ValueError, P5, self.graph, simple_nodes[0], self.image)
 
     def test_p5_should_brake_only_i_hyperedge(self):
-        pass  # TODO
+        self.__prepare_multi_hyperedge()
+        b_hyperedges_ids = self.__hyperedges_ids(HyperEdge.B)
+        f1_hyperedges_ids = self.__hyperedges_ids(Direction.N) + self.__hyperedges_ids(Direction.S)
+        f2_hyperedges_ids = self.__hyperedges_ids(Direction.E) + self.__hyperedges_ids(Direction.W)
+
+        self.assertRaises(ValueError, P5, self.graph, b_hyperedges_ids[0], self.image)
+        self.assertRaises(ValueError, P5, self.graph, f1_hyperedges_ids[0], self.image)
+        self.assertRaises(ValueError, P5, self.graph, f2_hyperedges_ids[0], self.image)
 
     def test_p5_should_not_break_broken_hyperedge(self):
-        pass  # TODO
+        hyperedge = self.__prepare_i_hyperedge()
+        P5(self.graph, hyperedge[0], self.image)
+        self.assertRaises(ValueError, P5, self.graph, hyperedge[0], self.image)
 
     # TODO when P3 will be committed
     def test_p6(self):
         width, height = self.image.size
 
         P1(self.graph, x_max_idx=width - 1, y_max_idx=height - 1, image=self.image)
-        i_hyperedges_ids = self.__i_hyperedges_ids()
+        i_hyperedges_ids = self.__hyperedges_ids(HyperEdge.I)
         P5(self.graph, i_hyperedges_ids[0], self.image)
         P2(self.graph, i_hyperedges_ids[0], self.image)
 
-        i_hyperedges_ids = self.__i_hyperedges_ids()
+        i_hyperedges_ids = self.__hyperedges_ids(HyperEdge.I)
         print(i_hyperedges_ids)
         # plot(self.graph)
         # for i_hyperedge in i_hyperedges_ids:
         #     P3(???)
 
-    def __i_hyperedges_ids(self):
-        return [idd for idd, data in self.__i_hyperedges()]
+    def __hyperedges_ids(self, label):
+        return [idd for idd, data in self.__hyperedges(label)]
 
-    def __i_hyperedges(self):
+    def __hyperedges(self, label):
         return [(idd, data) for idd, data in self.graph.nodes(data=True)
-                if 'label' in data.keys() and data['label'] == HyperEdge.I.name]
+                if 'label' in data.keys() and data['label'] == label.name]
 
     def __prepare_i_hyperedge(self):
         width, height = self.image.size
@@ -67,3 +73,10 @@ class TestP5(TestCase):
                      if 'label' in y.keys() and y['label'] == HyperEdge.I.name][0]
         self.graph.add_node(hyperedge[0], **hyperedge[1])
         return hyperedge
+
+    def __prepare_multi_hyperedge(self):
+        width, height = self.image.size
+        P1(self.graph, x_max_idx=width - 1, y_max_idx=height - 1, image=self.image)
+        i_hyperedges_ids = self.__hyperedges_ids(HyperEdge.I)
+        P5(self.graph, i_hyperedges_ids[0], self.image)
+        P2(self.graph, i_hyperedges_ids[0], self.image)

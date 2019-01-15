@@ -1,18 +1,12 @@
-import os
 from unittest import TestCase
 
 import networkx as nx
 from PIL import Image
 
-from productions import Direction
 from productions import P1
 from productions import P2
 from productions import P3
-from utils import get_node_id
-
-from hypergraphs.plot import plot
-
-IMAGE_PATH = os.path.join(os.path.dirname(__file__), "test_data", "four_colors.jpg")
+from utils import get_node_id, IMAGE_PATH, Direction
 
 B_DIRECTION_EDGE_LAMBDAS = {
     Direction.N: lambda data, f_data: f_data['x'] == data['x'] and f_data['y'] < data['y'],
@@ -34,7 +28,7 @@ class TestP3(TestCase):
 
         # plot(self.graph)
 
-        self.hyp_fs = [(x, y) for x, y in self.graph.nodes(data=True) if 'label' in y.keys() and y['label'] in Direction]
+        self.hyp_fs = [(x, y) for x, y in self.graph.nodes(data=True) if 'label' in y.keys() and y['label'] in [d.name for d in Direction]]
         self.hyp_bs = [(x, y) for x, y in self.graph.nodes(data=True) if 'label' in y.keys() and y['label'] == 'B']
         self.hyp_is = [(x, y) for x, y in self.graph.nodes(data=True) if 'label' in y.keys() and y['label'] == 'I']
         self.hyperedges = {
@@ -44,7 +38,7 @@ class TestP3(TestCase):
             Direction.W: {},
         }
         for direction, edges in self.hyperedges.items():
-            edges['f'] = [x for x in self.hyp_fs if x[1]['label'] == direction][0]
+            edges['f'] = [x for x in self.hyp_fs if x[1]['label'] == direction.name][0]
             edges['b'] = [(x, y) for x, y in self.hyp_bs if B_DIRECTION_EDGE_LAMBDAS[direction](y, edges['f'][1])][0]
 
             f_neighbour = list(self.graph.neighbors(edges['f'][0]))[0]

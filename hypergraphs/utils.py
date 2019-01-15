@@ -1,12 +1,20 @@
+import os
 from enum import Enum
 from typing import Tuple
 
+IMAGE_PATH = os.path.join(os.path.dirname(__file__), "tests/test_data", "four_colors.jpg")
+
 
 class HyperEdge(Enum):
-    F1 = 'F1'
-    F2 = 'F2'
     I = 'I'
     B = 'B'
+
+
+class Direction(Enum):
+    N = 1
+    S = 2
+    W = 3
+    E = 4
 
 
 def get_node_id(node_position: Tuple[int, int]) -> int:
@@ -28,11 +36,13 @@ def get_common_nodes(graph, hyperedge_id):
 
 
 def get_f1_nodes(graph, common_node_id):
-    return __get_x_nodes(graph, common_node_id, HyperEdge.F1)
+    return __get_x_nodes(graph, common_node_id, Direction.N) + \
+           __get_x_nodes(graph, common_node_id, Direction.S)
 
 
 def get_f2_nodes(graph, common_node_id):
-    return __get_x_nodes(graph, common_node_id, HyperEdge.F2)
+    return __get_x_nodes(graph, common_node_id, Direction.W) + \
+           __get_x_nodes(graph, common_node_id, Direction.E)
 
 
 def get_i_nodes(graph, common_node_id):
