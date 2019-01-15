@@ -1,15 +1,11 @@
-import os
 from unittest import TestCase
 
 import networkx as nx
 from PIL import Image
 
-from productions import Direction
 from productions import P1
 from productions import P2
-from utils import get_node_id
-
-IMAGE_PATH = os.path.join(os.path.dirname(__file__), "test_data", "four_colors.jpg")
+from utils import get_node_id, IMAGE_PATH, Direction
 
 
 class TestP2(TestCase):
@@ -66,10 +62,11 @@ class TestP2(TestCase):
             self.assertTrue(expected_node_position is not self.added_node_position)
 
     def test_if_direction_hyperedges_were_added_properly(self):
+        directions_names = Direction.__members__.keys()
         hyperedge_ids = [idd for idd, data in self.graph.nodes(data=True) if
-                         'label' in data.keys() and data['label'] in Direction]
+                         'label' in data.keys() and data['label'] in directions_names]
         hyperedge_positions = [(data['x'], data['y']) for idd, data in self.graph.nodes(data=True) if
-                               'label' in data.keys() and data['label'] in Direction]
+                               'label' in data.keys() and data['label'] in directions_names]
         self.assertEqual(len(hyperedge_positions), 4)
         expected_positions = [
             (99, 199),
