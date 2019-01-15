@@ -3,9 +3,9 @@ from unittest import TestCase
 import networkx as nx
 from PIL import Image
 
-from productions import P1, P2, Direction
+from productions import P1, P2
 from productions import P5
-from utils import HyperEdge, IMAGE_PATH
+from utils import HyperEdge, IMAGE_PATH, Direction
 
 
 class TestP5(TestCase):

@@ -3,11 +3,10 @@ from unittest import TestCase
 import networkx as nx
 from PIL import Image
 
-from productions import Direction
 from productions import P1
 from productions import P2
 from productions import P3
-from utils import get_node_id, IMAGE_PATH
+from utils import get_node_id, IMAGE_PATH, Direction
 
 B_DIRECTION_EDGE_LAMBDAS = {
     Direction.N: lambda data, f_data: f_data['x'] == data['x'] and f_data['y'] < data['y'],
