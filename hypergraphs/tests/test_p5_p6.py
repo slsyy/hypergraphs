@@ -1,4 +1,3 @@
-import os
 from unittest import TestCase
 
 import networkx as nx
@@ -6,9 +5,7 @@ from PIL import Image
 
 from productions import P1, P2, Direction
 from productions import P5
-from utils import HyperEdge
-
-IMAGE_PATH = os.path.join(os.path.dirname(__file__), "test_data", "four_colors.jpg")
+from utils import HyperEdge, IMAGE_PATH
 
 
 class TestP5(TestCase):

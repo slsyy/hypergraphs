@@ -31,22 +31,22 @@ def P3(graph: nx.Graph, hyp_b, hyp_is, hyp_f, image: Image):
 
     hyp_f_neighbour_data = graph.node[hyp_f_neighbour_ids[0]]
 
-    if hyp_f_data['label'] == Direction.N:
+    if hyp_f_data['label'] == Direction.N.name:
         if hyp_f_data['x'] != hyp_f_neighbour_data['x'] or hyp_f_data['y'] <= hyp_f_neighbour_data['y']:
             raise ValueError('F hyperedge has weird position')
         if hyp_f_data['x'] != hyp_b_data['x'] or hyp_f_data['y'] >= hyp_b_data['y']:
             raise ValueError('F hyperedge has weird position (B)')
-    elif hyp_f_data['label'] == Direction.S:
+    elif hyp_f_data['label'] == Direction.S.name:
         if hyp_f_data['x'] != hyp_f_neighbour_data['x'] or hyp_f_data['y'] >= hyp_f_neighbour_data['y']:
             raise ValueError('F hyperedge has weird position')
         if hyp_f_data['x'] != hyp_b_data['x'] or hyp_f_data['y'] <= hyp_b_data['y']:
             raise ValueError('F hyperedge has weird position (B)')
-    elif hyp_f_data['label'] == Direction.E:
+    elif hyp_f_data['label'] == Direction.E.name:
         if hyp_f_data['x'] <= hyp_f_neighbour_data['x'] or hyp_f_data['y'] != hyp_f_neighbour_data['y']:
             raise ValueError('F hyperedge has weird position')
         if hyp_f_data['x'] >= hyp_b_data['x'] or hyp_f_data['y'] != hyp_b_data['y']:
             raise ValueError('F hyperedge has weird position (B)')
-    elif hyp_f_data['label'] == Direction.W:
+    elif hyp_f_data['label'] == Direction.W.name:
         if hyp_f_data['x'] >= hyp_f_neighbour_data['x'] or hyp_f_data['y'] != hyp_f_neighbour_data['y']:
             raise ValueError('F hyperedge has weird position')
         if hyp_f_data['x'] <= hyp_b_data['x'] or hyp_f_data['y'] != hyp_b_data['y']:

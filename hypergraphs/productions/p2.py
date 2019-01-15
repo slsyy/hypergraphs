@@ -1,18 +1,9 @@
 import uuid
-from enum import Enum
 
 import networkx as nx
 from PIL.Image import Image
 
-from utils import get_node_id
-
-
-class Direction(Enum):
-    N = 1
-    S = 2
-    W = 3
-    E = 4
-
+from utils import get_node_id, Direction
 
 direction_calulcators = {
     Direction.N: (lambda x: x, lambda x: x + 100),
