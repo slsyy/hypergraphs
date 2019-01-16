@@ -35,7 +35,6 @@ def approximate(graph: Graph, max_x: int, max_y: int) -> Tuple[Dict, Dict, Dict]
                     for corner_id, corner_data in corners_with_ids:
                         for matrix, color in zip(matrices, get_colors(corner_data)):
                             matrix[px][py] += calculate_color(color, corner_id, px, x1, x2, py, y1, y2)
-                            matrix[px][py] = min(matrix[px][py], 255)
                     was_pixel_approximated[px][py] = True
     return matrices
 
