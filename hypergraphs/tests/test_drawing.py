@@ -1,5 +1,5 @@
 from unittest import TestCase
-from procedures import drawing
+from hypergraphs.procedures import drawing
 
 
 class TestDrawing(TestCase):

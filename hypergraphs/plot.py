@@ -2,7 +2,7 @@ import random
 
 import networkx as nx
 
-from utils import convert_to_hex
+from hypergraphs.utils import convert_to_hex
 from matplotlib import pyplot as plt
 
 

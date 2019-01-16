@@ -3,3 +3,4 @@ decorator==4.3.0
 networkx==2.2
 Pillow==5.3.0
 matplotlib
+parameterized

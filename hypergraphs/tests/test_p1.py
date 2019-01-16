@@ -3,8 +3,8 @@ from unittest import TestCase
 import networkx as nx
 from PIL import Image
 
-from productions import P1
-from utils import IMAGE_PATH
+from hypergraphs.productions import P1
+from hypergraphs.utils import IMAGE_PATH
 
 
 class TestP1(TestCase):
