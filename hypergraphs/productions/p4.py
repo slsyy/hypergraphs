@@ -7,6 +7,18 @@ from utils import get_node_id, Direction
 
 
 def P4(graph: nx.Graph, central_hyperedge, image: Image):
+    copy = graph.copy()
+
+    try:
+        run_P4(graph, central_hyperedge, image)
+    except Exception:
+        graph.clear()
+        graph.add_nodes_from(copy)
+        graph.add_edges_from(copy.edges)
+        raise
+
+
+def run_P4(graph: nx.Graph, central_hyperedge, image: Image):
     assert central_hyperedge in graph.node
     central_hyperedge_params = graph.node[central_hyperedge]
 
@@ -93,7 +105,7 @@ def P4(graph: nx.Graph, central_hyperedge, image: Image):
                 if same_x_pos:
                     return "E" if graph.node[q]["x"] < new_node_pos["x"] else "W"
                 else:
-                    return "S" if graph.node[q]["y"] < new_node_pos["y"] else "N"
+                    return "S" if graph.node[q]["y"] > new_node_pos["y"] else "N"
 
             H = [
                 h
